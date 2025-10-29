@@ -1,119 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CynLock Authentication</title>
-  <style>
-    body {
-      background-image: url("https://i.pinimg.com/564x/ea/f4/85/eaf4857bb45fec7a4592f750bf20a1d7.jpg");
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position:center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CynLock Authentication</title>
+    <style>
+        :root {
+            --primary-color: rgb(209, 190, 227);
+            --secondary-color: #ee98fd;
+            --background-dark: rgba(0, 0, 0, 0.2);
+        }
 
-    .box {
-      border: 3px solid rgba(255, 255, 255, 0.7);
-      border-radius: 20px;
-      padding: 30px;
-      width: 320px;
-      text-align: center;
-      backdrop-filter: blur(6px); /* adds subtle glass blur */
-      background-color: rgba(0, 0, 0, 0.2); /* slightly see-through background */
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
-      margin top: 150px;;
-    }
-    video, canvas {
-      position:absolute
-      border-radius: 200px;
+        body {
+            background-image: url("https://i.pinimg.com/564x/ea/f4/85/eaf4857bb45fec7a4592f750bf20a1d7.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: row; /* Layout container and camera side-by-side */
+            padding: 20px;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    }
+        .main-container {
+            display: flex;
+            gap: 50px;
+            align-items: center;
+        }
 
-    button {
-      background-color: rgb(209, 190, 227);
-      color: black;
-      padding: 10px 20px;
-      border-color:none;
-      border-radius: 15px;
-      cursor: pointer;
-      font-size: 16px;
-      display: inline-block;
-      margin: 10px;
-    }
+        .box {
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            backdrop-filter: blur(8px); /* slightly increased blur */
+            background-color: var(--background-dark);
+            box-shadow: 0 0 40px rgba(196, 124, 225, 0.5); /* Glowing shadow */
+            color: white;
+        }
 
-    input {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0 15px 0;
-      border: 1px solid #ee98fd;
-      border-radius: 8px;
-      font-size: 14px;
-    } 
+        .camera-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            background-color: var(--background-dark);
+            box-shadow: 0 0 40px rgba(196, 124, 225, 0.5);
+        }
+        
+        #camera {
+            border-radius: 10px;
+            transform: scaleX(-1); /* Mirror the video */
+            background-color: black;
+            border: 2px solid white;
+        }
 
-    input:focus {
-      outline: none;
-      border-color: rgb(196, 124, 225);
-      box-shadow: 0 0 5px rgba(95, 11, 111, 0.5);
-    }
-    .camera-section {
-    position: absolute;  /* lets you move it anywhere on the screen */
-    top: 250px;          /* move down — increase value to go lower */
-    left: 800px;         /* move right — increase value to go further right */
-    text-align: center;  /* centers the video and button inside */
-    }
-    h1 {
-      margin-top: 150px;
+        button {
+            background-color: var(--primary-color);
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-block;
+            margin: 10px 5px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background-color: rgb(180, 160, 210);
+            transform: translateY(-1px);
+        }
 
-    }
-   
-</body> 
-  </style>
+        label {
+            display: block;
+            text-align: left;
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px 0;
+            border: 1px solid var(--secondary-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-sizing: border-box; 
+        }
+
+        input:focus {
+            outline: none;
+            border-color: rgb(196, 124, 225);
+            box-shadow: 0 0 5px rgba(95, 11, 111, 0.5);
+        }
+
+        #statusBox {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 40px;
+            text-align: left;
+            font-size: 14px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--secondary-color);
+        }
+        .status-success { color: #85e085; }
+        .status-warning { color: #f0c382; }
+        .status-error { color: #ff8080; }
+        .status-info { color: #9cc9f0; }
+        
+        /* Utility to hide the capture button as we capture automatically */
+        #captureBtn { display: none; }
+    </style>
 </head>
 <body>
-  <div class="camera-section">
-  <video id="camera" autoplay playsinline width="300" height="230"></video>
-  <br>
-  <button id="captureBtn">📸 Capture Face</button>
-  <canvas id="snapshot" width="300" height="230" style="display:none;"></canvas>
-  </div>
+    <div class="main-container">
+        <!-- Left Section: Camera and Status -->
+        <div class="camera-section">
+            <h1 style="margin: 0 0 10px 0;">Face Biometric</h1>
+            <video id="camera" autoplay playsinline width="300" height="230"></video>
+            <canvas id="snapshot" width="300" height="230" style="display:none;"></canvas>
+            
+            <div id="captureStatus" style="color: gray; font-size: 0.9em; margin-top: 10px;">
+                Camera ready.
+            </div>
+        </div>
 
-  <script>
-    const video = document.getElementById("camera");
-    const canvas = document.getElementById("snapshot");
-    const context = canvas.getContext("2d");
+        <!-- Right Section: Auth Box -->
+        <div class="box">
+            <h1 style="margin: 0 0 20px 0;">Make your Web Browsing Safe</h1>
+            <h2 style="color:white; margin-top: 0;">🔒 CYNLOCK 🛡</h2>
+            <form id="authForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" placeholder="ENTER YOUR USERNAME">
+                
+                <label for="password">Password (Type here for Keystroke Biometrics):</label>
+                <input type="password" id="password" placeholder="ENTER YOUR PASSWORD">
+            </form>
+            <button id="enrollBtn">ENROLL</button>
+            <button id="verifyBtn">VERIFY</button>
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => alert("⚠️ Please allow camera access!"));
+            <div id="statusBox">
+                <span class="status-info">Ready. Please allow camera access and type in the password box.</span>
+            </div>
+        </div>
+    </div>
 
-    document.getElementById("captureBtn").onclick = () => {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imageData = canvas.toDataURL("image/png"); // base64 encoded
 
-      console.log("Captured face image:", imageData);
+<script>
+let typingStart;
+let userLocation = "Unknown";
 
-      fetch("http://127.0.0.1:5000/verify_face", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ face_image: imageData })
-      })
-      .then(res => res.json())
-      .then(data => alert("✅ " + data.message))
-      .catch(() => alert("❌ Could not reach the server"));
-    };
-  </script>
-  <h1>Make your Web Browsing Safe</h1>
-  <div class="box">
-    <h2 style="color:white">🔒 <en>CYNLOCK 🛡</en></h2>
-    <form>
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" placeholder="ENTER UR USERNAME"><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" placeholder="ENTER UR PASSWORD"><br>
-    </form>
-    <a><button>ENROLL</button></a>
-    <a><button>VERIFY</button></a>
-  </div>
+// Capture typing start time
+document.getElementById("password").addEventListener("keydown", () => {
+  if (!typingStart) typingStart = Date.now();
+});
+
+// Fetch user's geolocation automatically when the page loads
+async function fetchGeoLocation() {
+  if (!navigator.geolocation) {
+    console.warn("Geolocation not supported by this browser.");
+    userLocation = "Not Supported";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLocation = ${pos.coords.latitude}, ${pos.coords.longitude};
+      console.log("Location captured:", userLocation);
+      document.getElementById("statusBox").innerHTML =
+        <span class="status-success">📍 Location captured successfully.</span>;
+    },
+    err => {
+      console.warn("Location access denied or failed:", err.message);
+      userLocation = "Unknown";
+      document.getElementById("statusBox").innerHTML =
+        <span class="status-warning">⚠ Unable to access location. Please enable location services.</span>;
+    }
+  );
+}
+
+// Run when page loads
+window.addEventListener("load", fetchGeoLocation);
+
+// Enroll function
+async function enroll() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const res = await fetch("http://127.0.0.1:5000/enroll", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username, password, geolocation: userLocation })
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+// Verify function
+async function verify() {
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const typingSpeed = ((Date.now() - typingStart) / password.length).toFixed(2);
+
+  const res = await fetch("http://127.0.0.1:5000/verify", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username, password, typingSpeed, geolocation: userLocation })
+  });
+  const data = await res.json();
+  alert(data.message);
+}
+
+// Button listeners
+document.getElementById("enrollBtn").addEventListener("click", enroll);
+document.getElementById("verifyBtn").addEventListener("click", verify);
+</script>
+
+
+
 </body>
 </html>
