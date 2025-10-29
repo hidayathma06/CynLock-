@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CynLock Authentication</title>
+  <style>
+    body {
+      background-image: url("https://i.pinimg.com/564x/ea/f4/85/eaf4857bb45fec7a4592f750bf20a1d7.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position:center;
+      height: 100vh;
+    }
+
+    .box {
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      padding: 30px;
+      width: 320px;
+      text-align: center;
+      backdrop-filter: blur(6px); /* adds subtle glass blur */
+      background-color: rgba(0, 0, 0, 0.2); /* slightly see-through background */
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+      margin top: 150px;;
+    }
+    video, canvas {
+      position:absolute
+      border-radius: 200px;
+
+    }
+
+    button {
+      background-color: rgb(209, 190, 227);
+      color: black;
+      padding: 10px 20px;
+      border-color:none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-size: 16px;
+      display: inline-block;
+      margin: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0 15px 0;
+      border: 1px solid #ee98fd;
+      border-radius: 8px;
+      font-size: 14px;
+    } 
+
+    input:focus {
+      outline: none;
+      border-color: rgb(196, 124, 225);
+      box-shadow: 0 0 5px rgba(95, 11, 111, 0.5);
+    }
+    .camera-section {
+    position: absolute;  /* lets you move it anywhere on the screen */
+    top: 250px;          /* move down — increase value to go lower */
+    left: 800px;         /* move right — increase value to go further right */
+    text-align: center;  /* centers the video and button inside */
+    }
+    h1 {
+      margin-top: 150px;
+
+    }
+   
+</body> 
+  </style>
+</head>
+<body>
+  <div class="camera-section">
+  <video id="camera" autoplay playsinline width="300" height="230"></video>
+  <br>
+  <button id="captureBtn">📸 Capture Face</button>
+  <canvas id="snapshot" width="300" height="230" style="display:none;"></canvas>
+  </div>
+
+  <script>
+    const video = document.getElementById("camera");
+    const canvas = document.getElementById("snapshot");
+    const context = canvas.getContext("2d");
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => video.srcObject = stream)
+      .catch(err => alert("⚠️ Please allow camera access!"));
+
+    document.getElementById("captureBtn").onclick = () => {
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = canvas.toDataURL("image/png"); // base64 encoded
+
+      console.log("Captured face image:", imageData);
+
+      fetch("http://127.0.0.1:5000/verify_face", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ face_image: imageData })
+      })
+      .then(res => res.json())
+      .then(data => alert("✅ " + data.message))
+      .catch(() => alert("❌ Could not reach the server"));
+    };
+  </script>
+  <h1>Make your Web Browsing Safe</h1>
+  <div class="box">
+    <h2 style="color:white">🔒 <en>CYNLOCK 🛡</en></h2>
+    <form>
+      <label for="username">Username:</label><br>
+      <input type="text" id="username" placeholder="ENTER UR USERNAME"><br>
+      <label for="password">Password:</label><br>
+      <input type="password" id="password" placeholder="ENTER UR PASSWORD"><br>
+    </form>
+    <a><button>ENROLL</button></a>
+    <a><button>VERIFY</button></a>
+  </div>
+</body>
+</html>
